@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Configuration;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Mail;
 
 namespace pdr_scripts
@@ -10,21 +10,25 @@ namespace pdr_scripts
     {
         public static void Main()
         {
-            const string path = "\\\\cfco06nds01\\isd01\\SysDev\\CANTS\\PDR RUN SQL";
-            const string createdBy = "DCFS\\CAA6377";
-            const string emailSmtpHost = "SMTPR.illinois.gov";
-            string emailSendTo = "Cuneyt.Barutcu@illinois.gov";
+            var appSettings = ConfigurationManager.AppSettings;
+
+            var path = appSettings["NetworkPath"];
+            var createdBy = appSettings["UserName"];
+            var emailSmtpHost = appSettings["EmailSmtpHost"];
+            var emailSendTo = appSettings["EmailSendTo"];
+            var emailSendFrom = appSettings["EmailSendFrom"];
+            var emailSendFromDisplay = appSettings["EmailSendFromDisplay"];
+
 #if DEBUG
-            emailSendTo = "alexis.atchison@illinois.gov";
+            emailSendTo =  appSettings["DebugEmailSendTo"];
 #endif
-            const string emailSendFrom = "alexis.atchison@illinois.gov";
-            const string emailSendFromDisplay = "Atchison, Alexis";
+
             const string crlf = "<br />";
 
             var scripts = Directory.EnumerateFiles(path, "vantive*.sql", SearchOption.TopDirectoryOnly).ToList();
             var cutoffDate = DateTime.Now.Date;
 #if DEBUG
-            cutoffDate = DateTime.Now.Date.AddDays(-3);
+            cutoffDate = DateTime.Now.Date.AddDays(0);
 #endif
             var emailSubject = $"{cutoffDate.ToString("MM.dd.yyyy")} PDR Scripts";
 
